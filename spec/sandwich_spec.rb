@@ -1,16 +1,21 @@
 class Sandwich
-    attr_reader :taste, :items 
-    def initialize(taste, items)
+    attr_reader :taste, :toppings 
+    def initialize(taste, toppings)
         @taste = taste
-        @items = items
+        @toppings = toppings
     end
 end
 
 RSpec.describe 'An ideal sandwich' do
+    before { @sandwich = Sandwich.new('delicious',[]) }
     it 'is delicious' do
-        sandwich = Sandwich.new('delicious',[])
-        taste = sandwich.taste
+        taste = @sandwich.taste
         expect(taste).to eq('delicious')
+    end
+    
+    it 'lets me add toppings' do
+        toppings = @sandwich.toppings << 'shrimps'
+        expect(toppings).not_to be_empty
     end
 end
     
