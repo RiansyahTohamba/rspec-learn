@@ -1,15 +1,15 @@
 class Cart
-    attr_reader :items
+    attr_reader :cart
     def initialize
-        @items = []
+        @cart = []
     end
 
-    def add_item(item)
-        @items << item
+    def add_product(product)
+        @cart << product
     end
 
     def total_price
-        total = @items.reduce(0) {|sum,item| sum + item.price }
+        total = @cart.reduce(0) {|sum,product| sum + product.price }
         return total 
     end
 end
