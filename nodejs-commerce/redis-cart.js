@@ -4,7 +4,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const { createClient } = require('redis');
 const app = express();
-const port = 3000;
+const port = 12724;
 
 // Create Redis client
 const redisClient = createClient({
