@@ -1,3 +1,4 @@
+nodejs-commerce/node_modules
 *.gem
 *.rbc
 /.config
