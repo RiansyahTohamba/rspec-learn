@@ -29,9 +29,7 @@ end
 post '/add_to_cart' do
   product_id = params[:product_id].to_i
   quantity = params[:quantity].to_i
-
   session[:cart].add_product(product_id,quantity)
-
   redirect '/'
 end
 
