@@ -19,15 +19,10 @@ helpers do
     PRODUCTS.find { |product| product[:id] == id }
   end
 
-  def cart_total
-    session[:cart]&.sum { |item| item[:quantity] * find_product(item[:id])[:price] } || 0
-  end
 end
 
 get '/' do
-  session[:cart] ||= []
-  cart_service = CartService.new(session)
-  @items = cart_service.cart
+  session[:cart] ||= CartService.new
   erb :index
 end
 
@@ -35,11 +30,7 @@ post '/add_to_cart' do
   product_id = params[:product_id].to_i
   quantity = params[:quantity].to_i
 
-  cart_service = CartService.new
-  cart_service.add_item(product_id)
-    
-
-  session[:cart] ||= []
+  session[:cart].add_product(product_id,quantity)
 
   redirect '/'
 end
@@ -62,22 +53,32 @@ __END__
 </html>
 
 @@ index
+<h1>Checkout Page</h1>
+<h2>Choose Shipping address </h2>
+<p>place logic here </p>
+
+<h2>Choose Payment </h2>
+<p>place logic here </p>
+
 <h1>Your Cart</h1>
-<% if session[:cart].nil? || session[:cart].empty? %>
+
+<% if session[:cart].products.nil? || session[:cart].products.empty? %>
   <p>Your cart is empty.</p>
 <% else %>
   <ul>
-    <% session[:cart].each do |item| %>
-       product = find_product(item[:id]) %>
+  <%  session[:cart].products.each do |item| %>
+      <%  product = find_product(item[:id]) %>
       <li>
-        = product[:name] %> 
-        - Quantity: = item[:quantity] %> 
-        - Price: $= product[:price] %>
+      <%= product[:name] %> 
+      - Quantity: <%= item[:quantity] %> 
+      - Price: $ <%= product[:price] %> 
+      - Sub-Total: $<%= product[:price] * item[:quantity] %>
       </li>
-    <% end %>
+     <% end %>
   </ul>
-  <p>Total: $= cart_total %></p>
+  <p>Total: <%= session[:cart].total_price %></p>
 <% end %>
+
 <h1>Product List</h1>
 <ul>
   <% PRODUCTS.each do |product| %>
@@ -107,6 +108,6 @@ __END__
       </li>
     <% end %>
   </ul>
-  <p>Total: $<%= cart_total %></p>
+  <p>Total: $<%= session[:cart].total_price %></p>
 <% end %>
 <a href="/">Back to Products</a>

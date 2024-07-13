@@ -1,6 +1,7 @@
 # spec/services/cart_service_spec.rb
 
 require 'rspec'
+require '../spec_helper'
 require_relative '../../app/services/cart_service'
 
 describe CartService do
