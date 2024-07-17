@@ -17,7 +17,7 @@ class CartService
     end
 
     def total_price      
-      @products&.sum {|prd| prd[:quantity] * Product.new.find(prd[:id])[:price]} || 0
+      @products&.sum {|prd| prd[:quantity] * Product.find(prd[:id])[:price]} || 0
     end
 
     def remove_product(product_id)

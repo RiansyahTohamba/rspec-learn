@@ -1,24 +1,11 @@
 require 'sinatra'
 require 'sinatra/reloader' if development?
 require './app/services/cart_service'
-
+require './app/models/product'
 configure do
     enable :sessions
     set :session_secret, SecureRandom.hex(32)
     set :port, 20248 
-end
-# Sample product list
-PRODUCTS = [
-  { id: 1, name: 'Product 1', price: 10.0 },
-  { id: 2, name: 'Product 2', price: 20.0 },
-  { id: 3, name: 'Product 3', price: 30.0 }
-]
-
-helpers do
-  def find_product(id)
-    PRODUCTS.find { |product| product[:id] == id }
-  end
-
 end
 
 get '/' do
@@ -65,7 +52,7 @@ __END__
 <% else %>
   <ul>
   <%  session[:cart].products.each do |item| %>
-      <%  product = find_product(item[:id]) %>
+      <%  product = Product.find(item[:id]) %>
       <li>
       <%= product[:name] %> 
       - Quantity: <%= item[:quantity] %> 
@@ -79,7 +66,7 @@ __END__
 
 <h1>Product List</h1>
 <ul>
-  <% PRODUCTS.each do |product| %>
+  <% Product.all.each do |product| %>
     <li>
       <%= product[:name] %> - $<%= product[:price] %>
       <form action="/add_to_cart" method="post" style="display:inline;">
