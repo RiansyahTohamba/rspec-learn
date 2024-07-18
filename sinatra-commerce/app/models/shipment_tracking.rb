@@ -1,0 +1,2 @@
+class ShipmentTracking
+end
