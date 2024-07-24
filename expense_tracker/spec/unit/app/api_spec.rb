@@ -1,44 +1,58 @@
 require 'rack/test'
 require 'json'
 require_relative '../../../app/api'
+require_relative '../../../app/ledger'
 
 module ExpenseTracker
-    RecordResult = Struct.new(:success?, :expense_id, :error_message)
 
     RSpec.describe API do
         include Rack::Test::Methods
         let(:ledger) { instance_double('ExpenseTracker::Ledger')}
-
+        
         def app 
             ExpenseTracker::API.new(ledger: ledger)
         end
 
         describe 'POST /expenses' do
             context 'when the expense is successfully recorded' do
-                it 'returns the expense id' do
-                    expense = {'ngasal'=>"asal aja"}
+                # arrange (setup)
+                let(:expense) { {'ngasal'=>"asal aja"} }
+                before do
                     allow(ledger).to receive(:record)
                         .with(expense)
                         .and_return(RecordResult.new(true,417,nil))
+                end
 
+                it 'returns the expense id' do
+                    # act
                     post '/expenses', JSON.generate(expense), { 'CONTENT_TYPE' => 'application/json' }    
                     parsed = JSON.parse(last_response.body)
+                    # assert
                     expect(parsed).to include('expense_id'=>417)
                 end
                 it 'respond with a 200 (OK)' do
-                    expense = {'ngasal'=>"asal aja"}
-                    allow(ledger).to receive(:record)
-                        .with(expense)
-                        .and_return(RecordResult.new(true,417,nil))
-                    post '/expenses', JSON.generate(expense)    
+                    post '/expenses', JSON.generate(expense), { 'CONTENT_TYPE' => 'application/json' }    
                     expect(last_response.status).to eq(200)
                 end
-                    
-
             end
+
             context 'when the expense fails validation' do
-                it 'returns an error message'
-                it 'responds with a 422 (Unproccessable entity)'
+                # arrange (setup)
+                let(:expense) { {'ngasal'=>"asal aja"} }
+                before do
+                    allow(ledger).to receive(:record)
+                        .with(expense)
+                        .and_return(RecordResult.new(false,417,'Expense Incomplete'))
+                end
+                it 'returns an error message' do
+                    post '/expenses', JSON.generate(expense), { 'CONTENT_TYPE' => 'application/json' }    
+                    parsed = JSON.parse(last_response.body)
+                    expect(parsed).to include('error'=>'Expense Incomplete')
+                end
+
+                it 'responds with a 422 (Unproccessable entity)' do
+                    post '/expense'
+                end
             end
         end
     end
