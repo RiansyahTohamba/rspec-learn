@@ -10,6 +10,7 @@ class BookShelf
 end
 
 RSpec.describe BookShelf do
+    # menggunakan hook before akan menyebabkan 'example' untuk melibatkan semua variable yang ada di dalam block hook before. Permasalahannya tidak semua variable yang ada di block itu digunakan oleh setiap 'example'.
     before do
         @book1 = {author: 'Riansyah', title: 'Filsafat Jerman'}
         @book2 = {author: 'Bio', title: 'Kemajuan Cina'}
