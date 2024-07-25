@@ -55,5 +55,12 @@ module ExpenseTracker
                 end
             end
         end
+
+        describe 'GET /expenses/:date' do
+            context '' do
+            end
+            context '' do
+            end
+        end
     end
 end
