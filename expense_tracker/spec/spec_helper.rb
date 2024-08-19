@@ -56,6 +56,9 @@ RSpec.configure do |config|
   # is tagged with `:focus`, all examples get run. RSpec also provides
   # aliases for `it`, `describe`, and `context` that include `:focus`
   # metadata: `fit`, `fdescribe` and `fcontext`, respectively.
+  config.when_first_matching_example_defined(:db) do
+    require_relative 'support/db'
+  end
   config.filter_run_when_matching :focus
 
   # Allows RSpec to persist some state between runs in order to support

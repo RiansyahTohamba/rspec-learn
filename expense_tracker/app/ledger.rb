@@ -5,6 +5,9 @@ module ExpenseTracker
         def initialize
         end
         def record(expense)
+            DB[:expenses].insert(expense)
+            id = DB[:expenses].max(:id)
+            RecordResult.new(true,id,nil)
         end
     end
 end
