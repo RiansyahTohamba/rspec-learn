@@ -1,27 +1,28 @@
 require 'json'
+require 'net/http'
+require_relative '../../../app/kyc/dukcapil'
 
-RSpec.describe 'Dukcapil kyc feature' do
-    include Rack::Test::Methods
-    let(:dukcapil_third) { instance_double('DukcapilThirdParty')}
-
-    def app
-        ExpenseTracker::API.new(dukcapil)
-    end
-    describe 'POST /dukcapil/text_check'
-    
+RSpec.describe 'Dukcapil KYC Unit' do
+    let(:dukcapil_service) { ExpenseTracker::Dukcapil.new }
     describe 'POST /dukcapil/fr_check' do
         context 'when dukcapil successfully sent respond' do
-            it 'returns the search_score with the value greater than 80' do
-                user = { img: 'riansyah.jpeg', nik: '7478313123139120' }
-                post '/dukcapil/fr_check', JSON.generate(user), {'CONTENT_TYPE'=> 'application/json'}
-                expect(last_response.status).to eq(200)
-                parsed = JSON.parse(last_response.body)
-                expect(parsed['content']).to include('score')
+            it 'returns the score of searching result' do
+                response_body = { 'content' => {'score' => 0.8}}.to_json
+                uri = URI(ExpenseTracker::Dukcapil::FR_URL)
+                allow(Net::HTTP).to receive(:start).with(uri.hostname, uri.port, use_ssl:true)
+                    .and_return(double('response',body: response_body))
+                debitur = {nik: '7471091819930218831'}
+                result = dukcapil_service.fr_check(debitur)
+                expect(result.success?).to be(true)
+                expect(result.data).to include('score')
             end
         end
 
         context 'when dukcapil cannot identify debitur' do
-            it 'respond with a 400 status (wrong debts)'
+            # it 'respond with a 400 status (not found debts)'
         end
     end
+
+    describe 'POST /dukcapil/text_check'
+
 end
