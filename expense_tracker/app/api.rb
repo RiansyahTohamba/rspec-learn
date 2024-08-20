@@ -1,12 +1,20 @@
 require 'sinatra/base'
 require 'json'
 require_relative 'ledger'
+require_relative 'kyc/dukcapil'
 
 module ExpenseTracker
   class API < Sinatra::Base
-    def initialize(ledger: Ledger.new)
+    def initialize(ledger: Ledger.new, dukcapil: Dukcapil.new)
       @ledger = ledger
+      @dukcapil = dukcapil
       super()
+    end
+    
+    post '/dukcapil/fr_check' do
+      debitur = JSON.parse(request.body.read)
+      result = @dukcapil.fr_check(debitur)
+      JSON.generate('content' => result.content)
     end
 
     post '/expenses' do
