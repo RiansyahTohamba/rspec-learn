@@ -1,12 +1,13 @@
 require 'json'
 require 'ostruct'
+require_relative '../../config/sequel'
 
 module ExpenseTracker
     DukcapilResult = Struct.new(:status_code, :content, :error_message)
 
     class Dukcapil
         FR_URL = 'https://api.dukcapil.go.id/fr_check'
-        
+
         def initialize()
         end
         
@@ -33,7 +34,7 @@ module ExpenseTracker
 
 
         def log_record(debitur)
-            DB[:dukcapil_log].insert(debitur[:nik])
+            DB[:dukcapil_log].insert(debitur)
         end
 
         

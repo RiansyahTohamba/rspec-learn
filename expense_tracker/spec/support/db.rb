@@ -3,6 +3,7 @@ RSpec.configure do |c|
         Sequel.extension :migration
         Sequel::Migrator.run(DB,'db/migrations')
         DB[:expenses].truncate
+        DB[:dukcapil_log].truncate
     end
     c.around(:example, :db) do |example|
         DB.transaction(rollback: :always) {example.run}
