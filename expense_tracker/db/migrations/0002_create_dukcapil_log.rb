@@ -5,7 +5,7 @@ Sequel.migration do
             String :check_id
             String :nik_checked
             String :checker_id
-            Date :created_at
+            Time :created_at
         end
     end
 end
