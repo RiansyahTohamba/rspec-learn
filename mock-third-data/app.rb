@@ -20,5 +20,3 @@ post '/verify_identity' do
   content_type :json
   response.body
 end
-# Menjalankan aplikasi Sinatra
-# run Sinatra::Application
