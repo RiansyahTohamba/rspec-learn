@@ -10,7 +10,8 @@ RSpec.describe 'Dukcapil KYC Unit' do
     describe 'FR check' do
         def request_third_data(response_body)
             uri = URI(ExpenseTracker::Dukcapil::FR_URL)
-            allow(Net::HTTP).to receive(:start).with(uri.hostname, uri.port, use_ssl:true)
+            allow(Net::HTTP).to receive(:start)
+                .with(uri.hostname, uri.port, use_ssl:true)
                 .and_return(double('response',body: response_body))
         end
         
