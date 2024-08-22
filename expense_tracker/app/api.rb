@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'json'
 require_relative 'ledger'
 require_relative 'kyc/dukcapil'
+require 'net/http'
 
 module ExpenseTracker
   class API < Sinatra::Base
@@ -10,11 +11,23 @@ module ExpenseTracker
       @dukcapil = dukcapil
       super()
     end
-    
+
+    post '/dukcapil/text_check' do
+      debitur = JSON.parse(request.body.read)
+      result = @dukcapil.text_check(debitur)
+      JSON.generate(
+        'content' => result,
+        "quotaLimiter"=> 175203
+      )
+    end
+
     post '/dukcapil/fr_check' do
       debitur = JSON.parse(request.body.read)
       result = @dukcapil.fr_check(debitur)
-      JSON.generate('content' => result.content)
+      JSON.generate(
+        'content' => result,
+        "quotaLimiter"=> 175203
+      )
     end
 
     post '/expenses' do

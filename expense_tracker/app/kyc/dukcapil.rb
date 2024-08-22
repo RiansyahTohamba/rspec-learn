@@ -6,41 +6,49 @@ module ExpenseTracker
     DukcapilResult = Struct.new(:status_code, :content, :error_message)
 
     class Dukcapil
-        FR_URL = 'https://api.dukcapil.go.id/fr_check'
+        FR_URL = 'http://localhost:4300/dukcapil/fr_check'
 
         def initialize()
         end
         
 
         def fr_check(debitur)
-            uri = URI(FR_URL)
-            request = Net::HTTP::Post.new(uri)
-            request['Content-Type'] = 'application/json'
-            request.body = { nik: debitur[:nik] }.to_json
-        
-            response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-              http.request(request)
+            uri = URI('http://localhost:4300')
+            hostname = uri.hostname 
+            uri.path = '/dukcapil/fr_check'
+            req = Net::HTTP::Post.new(uri) 
+            req.body = '{"nik": "1287178288127172"}'
+            req.content_type = 'application/json'
+            res = Net::HTTP.start(hostname,uri.port) do |http|
+                http.request(req)
             end
             
-            parsed_response = JSON.parse(response.body)
-
-            if parsed_response['content'] && parsed_response['content']['score']
+            parsed_response = JSON.parse(res.body)
+            if parsed_response['content']
                 log_record(debitur)
-                OpenStruct.new(success?: true, data: parsed_response['content'])
+                parsed_response['content']
             else
-                OpenStruct.new(success?: false, error_message: 'verification failed')
+                {error_message: 'verification failed'}
             end
         end
 
-
+        # notes
+        # DB[:dukcapil_log].insert(check_id: '12823810', created_at: Time.now, nik_checked: '7471081299328172381')
+        # DB[:dukcapil_log].all
         def log_record(debitur)
-            DB[:dukcapil_log].insert(debitur)
+            DB[:dukcapil_log].insert(check_id: "DUK#{Time.now.to_i}",
+                created_at: Time.now, nik_checked: debitur['nik'])
         end
 
         
-        def text_check  
-            result = {NAME: true}
-            DukcapilResult.new(200,result,nil)
+        def text_check(debitur)  
+            {
+                "NAMA": "Sesuai (100)",
+                "TEMPAT_LAHIR": "Sesuai (100)",
+                "TANGGAL_LAHIR": "Tidak Sesuai",
+                "ALAMAT": "Tidak Sesuai (0)",
+                "NIK": "Sesuai"
+            }
         end
 
     end
