@@ -17,7 +17,7 @@ module ExpenseTracker
             hostname = uri.hostname 
             uri.path = '/dukcapil/fr_check'
             req = Net::HTTP::Post.new(uri) 
-            req.body = '{"nik": "1287178288127172"}'
+            req.body = "{'nik': #{debitur['nik']}}"
             req.content_type = 'application/json'
             res = Net::HTTP.start(hostname,uri.port) do |http|
                 http.request(req)
