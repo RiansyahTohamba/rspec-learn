@@ -1,7 +1,7 @@
 require 'rack/test'
 require 'json'
 require_relative '../../../app/api'
-require_relative '../../../app/ledger'
+require_relative '../../../app/services/ledger'
 
 module ExpenseTracker
 
