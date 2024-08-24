@@ -5,38 +5,26 @@ require_relative '../../../app/kyc/dukcapil_log'
 
 RSpec.describe 'Dukcapil KYC Unit' do
     let(:dukcapil_service) { ExpenseTracker::Dukcapil.new }
+    let(:debitur) { {'arbitary' => 'ngasal saja'}}
     # let(:dukcapil_log) { instance_double("ExpenseTracker::DukcapilLog")}
 
-    describe 'FR check' do
-        def request_third_data(response_body)
+     describe 'FR check' do
+        def request_third_mock(response_body)
             uri = URI(ExpenseTracker::Dukcapil::FR_URL)
             allow(Net::HTTP).to receive(:start)
-                .with(uri.hostname, uri.port, use_ssl:true)
+                .with(uri.hostname, uri.port)
                 .and_return(double('response',body: response_body))
         end
         
         context 'when dukcapil successfully sent respond' do
             it 'returns the score of searching result' do
                 response_body = { 'content' => {'status_code' => '200','score' => 0.8}}.to_json
-                request_third_data(response_body)
-
-                debitur = { 
-                    nik_checked: '7471091819930218831',
-                    check_id: '7471091819930218831_20240101',
-                    checker_id: 'COMPANY1292',
-                    created_at: Time.now
-                }
-
-                # expect(log).to eq('log has been saved')
-                dukcapil_log = instance_double('ExpenseTracker::DukcapilLog')
-                allow(ExpenseTracker::DukcapilLog).to receive(:new).and_return(dukcapil_log)
-                allow(dukcapil_log).to receive(:save).and_return(true)
-                
+                request_third_mock(response_body)
                 result = dukcapil_service.fr_check(debitur)
-                
-                expect(result.success?).to be(true)
-                expect(result.data).to include('score')
-                
+                expect(result).to include('score')
+                expect(DB[:dukcapil_log].all).to match [a_hash_including(
+                    # id: result.
+                )]
                 # LogResult = Struct.new(:nik_checked, :check_id, :checker_id, :response_status)
                 # log_result = ExpenseTracker::DukcapilLogResult.new
                 # # verifikasi log
@@ -47,7 +35,7 @@ RSpec.describe 'Dukcapil KYC Unit' do
         context 'when dukcapil cannot identify debitur' do
             it 'respond with NIK is not found' do
                 response_body = { 'content' => {'status_code'=> '4000','error_message' => 'Foto Tidak sesuai'}}
-                request_third_data(response_body)
+                request_third_mock(response_body)
             end
         end
     end

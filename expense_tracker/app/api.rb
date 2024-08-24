@@ -12,6 +12,10 @@ module ExpenseTracker
       super()
     end
 
+    post '/sent_email' do
+
+    end
+    
     post '/dukcapil/text_check' do
       debitur = JSON.parse(request.body.read)
       result = @dukcapil.text_check(debitur)
