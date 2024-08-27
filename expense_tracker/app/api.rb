@@ -1,5 +1,7 @@
 require 'sinatra/base'
 require 'json'
+require_relative '../config/warden'
+require_relative 'services/user'
 require_relative 'services/ledger'
 require_relative 'services/email'
 require_relative 'kyc/dukcapil'
@@ -12,6 +14,29 @@ module ExpenseTracker
       @dukcapil = dukcapil
       super()
     end
+
+    configure do
+      enable :sessions
+      set :session_secret, SecureRandom.hex(32)
+    end
+  
+    before '/user/pay' do
+      halt 403, "Not Authorized" unless authorized_user?
+    end      
+
+    get '/user/login' do
+      session[:user_id] = 'authorized_user_id'
+    end
+
+    post '/user/pay' do
+      to = 'riansyaht93@gmail.com'
+      subject = 'Payment Information'
+      body = 'Submit payment before 20 December 2024'
+      emailResult = Email.send_email(to, subject, body)
+      p "Log saved: #{emailResult}"
+      "payment finished, redirect to payment status page"
+    end
+    
 
     get '/' do
       "hello world"
@@ -57,5 +82,13 @@ module ExpenseTracker
     get '/expenses/:date' do
       JSON.generate(@ledger.expenses_on(params[:date]))
     end
+
+    helpers do
+      def authorized_user?
+        # false
+        session[:user_id] == 'authorized_user_id'
+      end
+    end
+
   end
 end

@@ -25,5 +25,6 @@ class Email
         subject subject
         body body
       end
+      "email: succesfully sent"
     end  
 end
