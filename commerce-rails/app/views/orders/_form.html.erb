@@ -1,0 +1,17 @@
+<!-- app/views/orders/_form.html.erb -->
+
+<%= form_with(model: order) do |form| %>
+  <%= form.label :address %>
+  <%= form.collection_select :address_id, @current_user.addresses, :id, :city %>
+
+  <%= form.label :courier %>
+  <%# <%= form.select :courier, options_for_select(@couriers) %> 
+  <%= form.collection_select :shippings_id, @couriers, :id, :city %>
+
+
+  <p id="total_price"></p>
+<% end %>
+<p>
+  Relasi Order 1 ke 1 Shipping
+  jadi label kurir ini akan memberikan 
+</p>
